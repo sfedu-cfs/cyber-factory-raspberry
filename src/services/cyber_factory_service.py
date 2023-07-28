@@ -14,6 +14,31 @@ class CyberFactoryService:
         self.login()
 
     @classmethod
+    def send_arp_record(cls, arp_table):
+        data = cls._construct_data(arp_table)
+        try:
+            response = requests.post(cls._get_url("arp-table"), json=data)
+            response.raise_for_status()
+            logger.info(f"Code: {response.status_code} Created arp table entry {response.json()}")
+            # return response.status_code
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            # TODO: Написать логгинг в какой функции ошибка
+            logger.error(e)
+
+    @classmethod
+    def send_list_arp_records(cls, list_arp):
+        data = cls._construct_data(list_arp)
+        try:
+            response = requests.post(cls._get_url("arp-table/upload-list"), json=data)
+            response.raise_for_status()
+            # TODO: Тут не приходит JSON в ответ, надо чтобы приходил
+            logger.info(f"Created arp table entries")
+            return response.status_code
+        except requests.exceptions.RequestException as e:
+            logger.error(e)
+
+    @classmethod
     def send_network_interface(cls, network_interface):
         data = cls._construct_data(network_interface)
         try:
@@ -51,7 +76,7 @@ class CyberFactoryService:
                 response = requests.post(url=login_url, json=creds, timeout=5)
                 response.raise_for_status()
                 if response.status_code in [200, 201]:
-                    logger.info(f"Login successful, {response.json()}")
+                    logger.info(f"Login successful")
                     return True
                 else:
                     logger.warning(f"Login failed. Invalid credentials. {response.json()}")

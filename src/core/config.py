@@ -1,15 +1,19 @@
-import configparser
-from dataclasses import dataclass
+import os
 
-parser = configparser.ConfigParser()
-parser.read("/home/lowqa/WORK/dev_repositories/factory_analyzer/src/settings.ini")
+from dataclasses import dataclass
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 @dataclass
 class Config:
-    base_url = parser["api"]["base_url"]
-    email = parser["login"]["email"]
-    password = parser["login"]["password"]
-
+    """
+    Configuration class
+    """
+    base_url = os.environ.get("BASE_URL")
+    email = os.environ.get("EMAIL")
+    password = os.environ.get("PASSWORD")
 
 config = Config()

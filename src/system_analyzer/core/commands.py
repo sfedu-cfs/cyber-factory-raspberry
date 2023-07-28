@@ -1,4 +1,5 @@
-GET_NETWORK_INTERFACES_COMMAND = "ip addr | grep inet|grep -v 'inet6'|awk '{print $NF, $2}'"
+GET_NETWORK_INTERFACES_IPS_COMMAND = "ip addr | grep inet|grep -v 'inet6'|awk '{print $NF, $2}'"
+GET_NETWORK_INTERFACES_NAMES_COMMAND = """ip addr | awk '/^[0-9]+:/ {sub(/:/,"",$2); print $2}'"""
 GET_IP_COMMAND = 'hostname -I | awk \'{print $1}\''
 GET_HOSTS_BY_INTERFACE_COMMAND = "arp-scan --interface={} --localnet"
 GET_HOSTNAME_COMMAND = 'cat /etc/hostname'
