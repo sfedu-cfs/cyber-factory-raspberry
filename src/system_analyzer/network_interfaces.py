@@ -1,6 +1,6 @@
 import netifaces
-from scapy.all import conf
 
+from scapy.all import conf
 from src.system_analyzer.core import (
     ShellCommandsExecutor, GET_NETWORK_INTERFACES_IPS_COMMAND, GET_NETWORK_INTERFACES_NAMES_COMMAND
 )
@@ -23,13 +23,24 @@ class NetworkInterfaces:
         return parsed_network_interfaces_ips
 
     def get_primary_network_interface_with_mask(self):
-        list_network_interface_with_mask = self.get_list_network_interfaces()
+        list_network_interfaces_mask = self.get_network_interfaces_mask()
 
         default_gateway = netifaces.gateways()['default'][netifaces.AF_INET]
         for iface in conf.ifaces.values():
             if iface.name == default_gateway[1]:
-                return default_gateway[0]
+                primary_interface = next(
+                    (item for item in list_network_interfaces_mask if item["name"] == default_gateway[1]), None)
+                if primary_interface:
+                    return f"{default_gateway[0]}/{primary_interface['netmask']}"
         return None
+
+    def get_network_interfaces_mask(self):
+        return [
+            {
+                "name": item["name"], "netmask": item["ipAddress"].split('/')[1] if item["ipAddress"] else None
+            }
+            for item in self.get_list_network_interfaces()
+        ]
 
     @staticmethod
     def parse_network_interfaces_ips(list_network_interfaces_ips):
@@ -41,11 +52,6 @@ class NetworkInterfaces:
             for item in list_network_interfaces_ips
         ]
 
-    @staticmethod
-    def get_network_interfaces_mask(list_network_interfaces):
-        return [
-            {
-                "name": item["name"], "netmask": item["ipAddress"].split('/')[1] if item["ipAddress"] else None
-            }
-            for item in list_network_interfaces
-        ]
+
+ni = NetworkInterfaces()
+DEFAULT_GATEWAY_IP = ni.get_primary_network_interface_with_mask()
