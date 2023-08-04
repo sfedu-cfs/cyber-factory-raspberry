@@ -1,13 +1,11 @@
-from __future__ import annotations
-
-from typing import List, Optional, Union
-
 from pydantic import BaseModel
-from pydantic.v1.typing import NoneType
+from typing import List
+
+from src.helpers.helpers import get_mac
 
 
 class BaseNetworkInterface(BaseModel):
-    deviceMacAddress: str
+    deviceMacAddress: str = get_mac()
 
 
 class BaseSingleNetworkInterface(BaseModel):
@@ -15,22 +13,9 @@ class BaseSingleNetworkInterface(BaseModel):
     ipAddress: str
 
 
-class SingleNetworkInterface(BaseNetworkInterface, BaseSingleNetworkInterface):
+class SingleNetworkInterface(BaseSingleNetworkInterface, BaseNetworkInterface):
     pass
 
 
 class ListNetworkInterface(BaseNetworkInterface):
     items: List[BaseSingleNetworkInterface]
-
-
-class Car(BaseModel):
-    name: str
-    color: str
-
-
-class User(BaseModel):
-    id: int
-    name: str
-    age: Union[int, NoneType]
-    town: Union[str, NoneType]
-    car: Car

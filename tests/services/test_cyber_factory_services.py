@@ -1,8 +1,12 @@
 import pytest
+import requests
+
+from unittest import mock
 
 from src.services.cyber_factory_service import CyberFactoryService
 from tests.helpers.random_ip import random_ipv4 as random_ip
 from tests.helpers.random_mac import get_random_mac_address as random_mac
+from src.schemas.sfc import SFC
 
 
 @pytest.fixture
@@ -58,3 +62,17 @@ def test_send_arp_record(obj, ip, mac):
 
     assert response["ipAddress"] == ip
     assert response["macAddress"] == mac
+
+
+def test_send_sfc(obj):
+    sfc = SFC(name="app5", version="1.0")
+    print(sfc.model_dump(by_alias=True))
+    expected_response = {
+        "id": 3,
+        "name": "app5",
+        "version": "1.0"
+    }
+
+    response = obj.send_sfc(sfc)
+
+    assert response == expected_response

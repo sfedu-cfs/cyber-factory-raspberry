@@ -1,4 +1,7 @@
+import os
+
 from loguru import logger
 
-logger.add("../../logs/app.log", level="DEBUG", format="{time} - {level} - {message} - "
-                                                       "in function: {function} - File: {file}")
+log_file = os.path.join(os.getcwd(), "logs", "app.log")
+logger.add(log_file, level="DEBUG", format="{time} - {level} - {message} - "
+                                           "in function: {function} - File: {file}")

@@ -6,6 +6,7 @@ class ShellCommandsExecutor:
         self.command = command
 
     def execute(self, *args):
+        # TODO: check shell = True for best practice
         command = self.__format_command(self.command, args)
         result = subprocess.run(
             command,
