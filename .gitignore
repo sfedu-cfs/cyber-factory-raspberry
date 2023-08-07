@@ -127,8 +127,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# JetBrains IDE
 .idea/
 /.idea/
+.DS_Store
 
 .output.json
 .pytest.ini
