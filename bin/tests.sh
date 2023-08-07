@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# TODO: Rewrite all binaries to Makefile
 # Set the PYTHONPATH to the relative path of the factory_analyzer directory
 cd ..
 PYTHONPATH=$(dirname "$PWD")
