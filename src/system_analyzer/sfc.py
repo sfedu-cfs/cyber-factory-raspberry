@@ -1,8 +1,6 @@
-import json
-
 from pydantic import ValidationError
 
-from src.schemas.sfc import SFC
+from src.schemas.sfc import SingleSFC
 from src.system_analyzer.core.shell_commands_exec import ShellCommandsExecutor
 from src.system_analyzer.core.commands import GET_INSTALLED_APPLICATIONS
 from src.core.log_config import logger
@@ -26,23 +24,24 @@ class InstalledApplications:
     """
 
     def __init__(self):
-        self.result_command_execute = ShellCommandsExecutor(GET_INSTALLED_APPLICATIONS).execute()
+        self.result_command_execute = ""
         self.applications = []
 
-    def collect(self):
+    def collect_applications(self):
         """
         Collects the installed applications.
 
         This method parses the output of the shell command execution to extract application names and versions.
         It creates instances of the SFC class for each application and adds them to the applications list.
         """
-        for line in self.result_command_execute.splitlines():
-            try:
+        try:
+            self.result_command_execute = ShellCommandsExecutor(GET_INSTALLED_APPLICATIONS).execute()
+            for line in self.result_command_execute.splitlines():
                 name, version = line.strip().split('\t')
-                app = SFC(name=name, version=version)
+                app = SingleSFC(name=name, version=version)
                 self.applications.append(app)
-            except ValidationError as e:
-                logger.error(e)
+        except (ValidationError, Exception) as e:
+            logger.error(f"Error collecting applications: {e}")
 
     def print_applications(self):
         """
@@ -53,11 +52,9 @@ class InstalledApplications:
         for app in self.applications:
             print(f"Application Name: {app.name}")
             print(f"Application Version: {app.version}")
-            print(f"Device ID: {app.device_id}")
             print()
 
 
 installed_apps = InstalledApplications()
-installed_apps.collect()
+installed_apps.collect_applications()
 installed_apps.print_applications()
-
