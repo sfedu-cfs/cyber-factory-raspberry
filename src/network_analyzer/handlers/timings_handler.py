@@ -1,11 +1,11 @@
 import configparser
 import datetime
 
-from handlers.models import Count
+from ..handlers.models import Count
 
+config = configparser.ConfigParser()  # create a parser object
+config.read("./src/network_analyzer/settings.ini")  # read data from cfg
 
-config = configparser.ConfigParser() # create a parser object
-config.read("./src/network_analyzer/settings.ini") # read data from cfg
 
 def timings():
     """
@@ -18,7 +18,7 @@ def timings():
     try:
         timings = [x.strip() for x in config["traffic"]["timings"].split(',')]
         count_timings = []
-        for timing in range(len(timings)): # create necessary number of objects
+        for timing in range(len(timings)):  # create necessary number of objects
             _ = Count(datetime.datetime.now())
             _.timing = int(timings[timing])
             count_timings.append(_)
@@ -26,7 +26,7 @@ def timings():
     except Exception as err:
         print("Something wrong with setting.ini. Fix it and try again.")
         print(err)
-        
+
 
 if __name__ == "__main__":
     timings()

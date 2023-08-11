@@ -1,6 +1,8 @@
 from scapy.layers.l2 import Ether, ARP
 from scapy.sendrecv import sr1, srp
+
 from src.system_analyzer.network_interfaces import DEFAULT_GATEWAY_IP
+from src.schemas.arp_table import SingleARP, ListARP
 
 
 class ArpTable:
@@ -31,29 +33,14 @@ class ArpTable:
 
         Returns:
             list: A list of dictionaries containing IP and MAC addresses in the ARP table.
-
-        Example:
-            [
-                {
-                    "ip_address": "192.168.1.1",
-                    "mac_address": "00:11:22:33:44:55"
-                },
-                {
-                    "ip_address": "192.168.1.2",
-                    "mac_address": "AA:BB:CC:DD:EE:FF"
-                }
-            ]
         """
         request = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=self.ip)
         answers_packets, unanswered_packets = srp(request, timeout=2, retry=1)
-        result = [
-            {
-                "ip_address": received.psrc,
-                "mac_address": received.hwsrc,
-            }
-            for sent, received in answers_packets
-        ]
-        return result
+        return ListARP(
+            items=[
+                SingleARP(ip=received.psrc, mac=received.hwsrc) for sent, received in answers_packets
+            ]
+        )
 
 
 at = ArpTable()

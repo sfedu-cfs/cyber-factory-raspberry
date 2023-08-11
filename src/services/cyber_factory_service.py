@@ -16,7 +16,8 @@ class CyberFactoryService:
     @classmethod
     def send_sfc(cls, sfc):
         try:
-            response = requests.post(cls._get_url("sfc"), json=sfc.model_dump(by_alias=True))
+            url = cls._get_url("sfc")
+            response = requests.post(url, json=sfc.model_dump(by_alias=True))
             response.raise_for_status()
             logger.info(f"Code: {response.status_code} Created sfc {response.json()}")
             return response.json()

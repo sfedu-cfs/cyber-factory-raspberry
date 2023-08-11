@@ -14,7 +14,7 @@ class BaseCountPacket(BaseModel):
 
 class EthernetLayer(BaseModel):
     """
-    Base class for a ethernet layer.
+    Base class for an ethernet layer.
     """
 
     arp_count: int = Field(None, description="The number of arp packets.")
@@ -74,6 +74,3 @@ class CountPacket(ModbusLayer, PresentationLayer, TransportLayer, EthernetLayer,
         - BaseCountPacket
         - BaseSchema
     """
-
-
-c_p = CountPacket(timing=5)
