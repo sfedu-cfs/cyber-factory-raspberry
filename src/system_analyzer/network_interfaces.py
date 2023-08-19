@@ -24,20 +24,19 @@ class NetworkInterfaces:
     def get_primary_network_interface_with_mask(self):
         network_interfaces_mask = self.get_network_interfaces_mask()
         default_gateway = netifaces.gateways()['default'][netifaces.AF_INET]
-        print(conf.ifaces.values())
         for iface in conf.ifaces.values():
             if iface.name == default_gateway[1]:
                 primary_interface = next(
-                    (interface for interface in network_interfaces_mask if interface.name == default_gateway[1]), None)
+                    (iface for iface in network_interfaces_mask if iface.name == default_gateway[1]), None)
                 if primary_interface:
                     return f"{default_gateway[0]}/{primary_interface.netmask}"
         return None
 
     def get_network_interfaces_mask(self):
         return [
-            BaseSingleNetworkInterfaceMask(name=interface.name,
-                                           netmask=interface.ip.split('/')[1] if interface.ip else None)
-            for interface in self.get_list_network_interfaces().items
+            BaseSingleNetworkInterfaceMask(name=iface.name,
+                                           netmask=iface.ip.split('/')[1] if iface.ip else None)
+            for iface in self.get_list_network_interfaces().items
         ]
 
     @staticmethod
@@ -49,7 +48,10 @@ class NetworkInterfaces:
 
 
 ni = NetworkInterfaces()
-# DEFAULT_GATEWAY_IP = ni.get_primary_network_interface_with_mask()
-# print(ni.get_list_network_interfaces())
-print(ni.get_network_interfaces_mask())
-print(ni.get_primary_network_interface_with_mask())
+DEFAULT_GATEWAY_IP = ni.get_primary_network_interface_with_mask()
+
+if __name__ == "__main__":
+    print(ni.get_list_network_interfaces().model_dump_json(by_alias=True, indent=4))
+    for interface in ni.get_network_interfaces_mask():
+        print(interface.model_dump_json(by_alias=True, indent=4))
+    print(ni.get_primary_network_interface_with_mask())

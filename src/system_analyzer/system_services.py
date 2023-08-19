@@ -51,3 +51,8 @@ class SystemServicesCollector:
             raise e
 
         return services
+
+
+if __name__ == "__main__":
+    ss = SystemServicesCollector().collect()
+    print(ss.model_dump_json(by_alias=True, indent=4))

@@ -49,3 +49,8 @@ class ArpTableCollector:
             raise e
 
         return arp_entries
+
+
+if __name__ == '__main__':
+    at = ArpTableCollector().collect()
+    print(at.model_dump_json(by_alias=True, indent=4))
