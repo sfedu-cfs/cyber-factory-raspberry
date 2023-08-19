@@ -25,6 +25,7 @@ typing-extensions = "==4.7.1"
 urllib3 = "==2.0.4"
 zipp = "==3.15.0"
 psutil = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

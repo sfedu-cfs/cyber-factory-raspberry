@@ -8,36 +8,37 @@ from src.core.log_config import logger
 
 class SystemServicesCollector:
     """
-    Collects system services and their statuses.
+    Represents a collector for system services.
 
-    This class uses a ShellCommandsExecutor instance to execute a shell command and retrieve the system services.
+    This class uses a ShellCommandsExecutor instance to execute a shell command and retrieve names and status of
+    system services.
     It parses the output of the command and creates instances of the SingleSystemService class for each service.
     The collected services are stored in a ListSystemService object.
 
     Attributes:
         executor (ShellCommandsExecutor): An instance of ShellCommandsExecutor used to execute the shell command.
 
-    Example:
-        collector = SystemServicesCollector()
-        services = collector.collect_services()
+    Example usage:
+        sys_services = SFCCollector().collect()
+        print(sys_services.model_dump_json(by_alias=True)
     """
 
     def __init__(self):
-        self.executor = ShellCommandsExecutor(GET_SYSTEM_SERVICES_INFO).execute()
         """
-        Initializes the SystemServicesCollector with a ShellCommandsExecutor instance.
+        Initializes the SystemServiceCollector with a ShellCommandsExecutor instance.
         """
+        self.executor = ShellCommandsExecutor(GET_SYSTEM_SERVICES_INFO)
 
-    def collect_services(self):
+    def collect(self):
         """
         Collects system services and their statuses.
 
         Returns:
             ListSystemService: A ListSystemService object containing the collected system services.
-            None: If an error occurs during collection.
         """
         try:
-            lines = self.executor.split('\n')[1:-6]
+            output = self.executor.execute()
+            lines = output.split('\n')[1:-6]
             services = ListSystemService(items=[])
             for line in lines:
                 if line.strip():
@@ -49,9 +50,4 @@ class SystemServicesCollector:
             logger.error(f"Error collecting system services: {e}")
             raise e
 
-        return services.model_dump_json(by_alias=True)
-
-
-system_services = SystemServicesCollector().collect_services()
-print(system_services)
-
+        return services

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 
 from src.schemas.base import BaseSchema
 
@@ -10,7 +10,16 @@ class BaseSingleNetworkInterface(BaseModel):
     """
 
     name: str = Field(None, description="The name of the interface.")
-    ip: str = Field(None, description="The IP address of the interface", alias="ipAddress")
+    ip: str = Field(None, description="The IP address of the interface", serialization_alias="ipAddress")
+
+
+class BaseSingleNetworkInterfaceMask(BaseModel):
+    """
+    Base class for a single network interface name and mask.
+    """
+
+    name: str = Field(None, description="The name of the interface.")
+    netmask: Optional[str] = Field(None, description="The netmask of the interface.")
 
 
 class SingleNetworkInterface(BaseSingleNetworkInterface, BaseSchema):

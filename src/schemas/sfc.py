@@ -27,7 +27,7 @@ class SingleSFC(BaseSingleSFC, BaseSchema):
     """
 
 
-class ListSystemService(BaseSchema):
+class ListSFC(BaseSchema):
     """
     Model representing a list of Service Function Components (SFCs) with device ID.
 

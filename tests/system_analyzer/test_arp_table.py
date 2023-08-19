@@ -4,7 +4,7 @@ import pytest
 from scapy.layers.l2 import Ether, ARP
 
 from src.schemas.arp_table import SingleARP, ListARP
-from src.system_analyzer.arp_table import ArpTable
+from src.system_analyzer.arp_table import ArpTableCollector
 
 
 @pytest.mark.parametrize("mock_response, expected_arp_table", [
@@ -20,8 +20,8 @@ from src.system_analyzer.arp_table import ArpTable
 ])
 def test_get_arp_table(mock_response, expected_arp_table):
     with patch("src.system_analyzer.arp_table.srp", return_value=(mock_response, [])):
-        at = ArpTable()
-        arp_table = at.get_arp_table()
+        at = ArpTableCollector()
+        arp_table = at.collect()
 
     assert arp_table == expected_arp_table
 

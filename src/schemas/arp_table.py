@@ -15,8 +15,8 @@ class BaseSingleARP(BaseModel):
     """
 
     name: str = Field(None, description="The name of the ARP-table entry.")
-    ip: str = Field(None, description="The IP address of the ARP-table entry", alias="ipAddress")
-    mac: str = Field(None, description="The MAC address of the ARP-table entry", alias="macAddress")
+    ip: str = Field(None, description="The IP address of the ARP-table entry", serialization_alias="ipAddress")
+    mac: str = Field(None, description="The MAC address of the ARP-table entry", serialization_alias="macAddress")
 
 
 class SingleARP(BaseSingleARP, BaseSchema):
