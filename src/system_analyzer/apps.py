@@ -26,6 +26,7 @@ class AppsCollector:
         apps = []
         for line in self.result_command_execute.splitlines():
             app_info = line.split('\t')
+            # TODO: fix this
             if len(app_info) == 3:
                 name, version, description = app_info
                 app = BaseSingleApp(name=name, version=version, description=description)

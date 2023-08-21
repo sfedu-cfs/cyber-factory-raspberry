@@ -20,9 +20,9 @@ from src.system_analyzer.arp_table import ArpTableCollector
 ])
 def test_get_arp_table(mock_response, expected_arp_table):
     """
-    Test the functionality of the ArpTableCollector.collect method.
+    Test the functionality of the ArpTableCollector#collect method.
 
-    This test verifies that the ArpTableCollector.collect method correctly collects ARP table entries by mocking the
+    This test verifies that the ArpTableCollector#collect method correctly collects ARP table entries by mocking the
     behavior of the srp function from the scapy library.
 
     The mock_response parameter represents a list of tuples, where each tuple contains an Ethernet frame and an ARP
@@ -30,10 +30,10 @@ def test_get_arp_table(mock_response, expected_arp_table):
 
     The expected_arp_table parameter represents the expected ARP table entries as a ListARP object.
 
-    The srp function is patched to return the mock_response. The ArpTableCollector.collect method is then called, and
+    The srp function is patched to return the mock_response. The ArpTableCollector#collect method is then called, and
     the returned ARP table is compared with the expected ARP table using the assert statement.
 
-    If the test passes, it indicates that the ArpTableCollector.collect method is correctly collecting ARP table entries.
+    If the test passes, it indicates that the ArpTableCollector#collect method is correctly collecting ARP table entries.
 
     """
     with patch("src.system_analyzer.arp_table.srp", return_value=(mock_response, [])):

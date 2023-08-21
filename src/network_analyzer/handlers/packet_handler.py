@@ -1,56 +1,55 @@
-import datetime
-from scapy.all import *
 import scapy.contrib.modbus as mb
+from datetime import datetime as dt
+from scapy.layers.l2 import Ether
 from scapy.layers.http import HTTPRequest, HTTPResponse
-from handlers.wrappers import wrap_count_timings
+from src.network_analyzer.wrappers.packet_wrappers import modbus_wrapper, arp, ipv4, ipv6, unknown_ether
 
-def packet_handler(packet, timings):
+ETHER_NUMS = {2054: arp, 2048: ipv4, 34525: ipv6}
+MODBUS_LAYERS = {
+    mb.ModbusADURequest: lambda p: str(p[mb.ModbusADURequest]).split(' / ')[1],
+    mb.ModbusADUResponse: lambda p: str(p[mb.ModbusADUResponse]).split(' / ')[1]
+}
+HTTP_LAYERS = {
+    HTTPRequest: lambda c: setattr(c, 'http_request_count', c.http_request_count + 1),
+    HTTPResponse: lambda c: setattr(c, 'http_response_count', c.http_response_count + 1)
+}
+
+
+def packet_handler(packet, timings, ether_nums=None):
     """
-    This function work as packet handler for scapy.sniff
+    Handle a packet and update the timings.
 
     Args:
-        packet (scapy type): scapy layered form of internet packet
+        packet: The packet being processed.
+        timings: The timings object to update.
+        ether_nums: A dictionary of ether types and their corresponding functions.
+
+    Returns:
+        The output string containing the model dump JSON.
     """
-    output = {
-        "time": datetime.now()
-    }
-    if int(packet[Ether].type) == 2054: # ARP type
-        output["is_arp"] = True
-        wrap_count_timings(timings, output)
-    if packet[Ether].type == 2048: # IPv4
-        if packet[IP].proto == 6:
-            output["is_tcp"] = True
-        elif packet[IP].proto == 17:
-            output["is_udp"] = True
-        elif packet[IP].proto == 1:
-            output["is_icmp"] = True
-        wrap_count_timings(timings, output)
-    elif packet[Ether].type == 34525: # IPv6
-        if packet[IPv6].nh == 6:
-            output["is_tcp"] = True
-        elif packet[IPv6].nh == 17:
-            output["is_udp"] = True
-        elif packet[IPv6].nh == 1:
-            output["is_icmp"] = True
-        wrap_count_timings(timings, output)
-    if mb.ModbusADURequest in packet: # Looking for ModBus layer
-        modbus_type = str(packet[mb.ModbusADURequest]).split(' / ')[1]
-        print()
-        output["modbus_type"] = modbus_type
-        wrap_count_timings(timings, output)
-    elif mb.ModbusADUResponse in packet:
-        modbus_type = str(packet[mb.ModbusADUResponse]).split(' / ')[1]
-        output["modbus_type"] = modbus_type
-        wrap_count_timings(timings, output)
-    if packet.haslayer(HTTPRequest): #Looking for HTTP layer
-        output["http_request"] = True
-        wrap_count_timings(timings, output)
-    elif packet.haslayer(HTTPResponse):
-        output["http_response"] = True
-        wrap_count_timings(timings, output)
-    
-    
-        
-if __name__ == "__main__":
-    #print(packet_handler(Ether()/IP()/TCP()/mb.ModbusADURequest()/mb.ModbusPDU02ReadDiscreteInputsResponse()))
-    print(packet_handler(Ether()/IP()/TCP()/mb.ModbusADURequest()/mb.ModbusPDU03ReadHoldingRegistersRequest()))
+    if ether_nums is None:
+        ether_nums = ETHER_NUMS
+    output = ""
+
+    for counter in timings:
+        counter.last_update = dt.now().time()
+        counter.all_proto_count += 1
+
+        # Ether handling
+        ether = ether_nums.get(packet[Ether].type, unknown_ether)
+        ether(packet, counter)
+
+        # Modbus handling
+        for layer, extractor in MODBUS_LAYERS.items():
+            if layer in packet:
+                modbus_type = extractor(packet)
+                modbus_wrapper(packet, counter, modbus_type)
+
+        # HTTP handling
+        for layer, action in HTTP_LAYERS.items():
+            if packet.haslayer(layer):
+                action(counter)
+
+        output += counter.model_dump_json(indent=4)
+
+    return output

@@ -37,8 +37,8 @@ class SystemServicesCollector:
             ListSystemService: A ListSystemService object containing the collected system services.
         """
         try:
+            # [1:-6] - remove the first and the last 6 lines of the output of the command with support info
             lines = self.executor.split('\n')[1:-6]
-            print(lines)
             services = ListSystemService(items=[])
             for line in lines:
                 if line.strip():

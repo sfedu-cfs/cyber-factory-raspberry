@@ -16,23 +16,23 @@ from src.schemas.sfc import ListSFC, BaseSingleSFC
 ])
 def test_collect_applications(expected_mock_output, expected_sfc):
     """
-    Test the functionality of the SFCCollector.collect method.
+    Test the functionality of the SFCCollector#collect method.
 
-    This test verifies that the SFCCollector.collect method correctly collects SFC (Service Function Chain) information
-    by mocking the behavior of the ShellCommandsExecutor.execute method.
+    This test verifies that the SFCCollector#collect method correctly collects SFC (Service Function Chain) information
+    by mocking the behavior of the ShellCommandsExecutor#execute method.
 
-    The expected_mock_output parameter represents the expected output of the ShellCommandsExecutor.execute method.
+    The expected_mock_output parameter represents the expected output of the ShellCommandsExecutor#execute method.
 
     The expected_sfc parameter represents the expected result as a ListSFC object.
 
-    The patch.object decorator is used to mock the return value of the ShellCommandsExecutor.execute method. It returns
+    The patch.object decorator is used to mock the return value of the ShellCommandsExecutor#execute method. It returns
     the expected_mock_output.
 
     An instance of the SFCCollector class is created. The collect method is then called.
 
     The assert statement compares the returned SFC with the expected_sfc.
 
-    If the test passes, it indicates that the SFCCollector.collect method is correctly collecting SFC information.
+    If the test passes, it indicates that the SFCCollector#collect method is correctly collecting SFC information.
 
     """
     with patch.object(ShellCommandsExecutor, 'execute', return_value=expected_mock_output):

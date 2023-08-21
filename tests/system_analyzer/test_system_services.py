@@ -43,18 +43,18 @@ from src.system_analyzer.system_services import SystemServicesCollector
 ])
 def test_system_services_collector(expected_mock_output, expected_services):
     """
-    Test the functionality of the SystemServicesCollector.collect method.
+    Test the functionality of the SystemServicesCollector#collect method.
 
-    This test verifies that the SystemServicesCollector.collect method correctly collects system services by mocking
-    the behavior of the ShellCommandsExecutor.execute method.
+    This test verifies that the SystemServicesCollector#collect method correctly collects system services by mocking
+    the behavior of the ShellCommandsExecutor#execute method.
 
-    The expected output of the mocked ShellCommandsExecutor.execute method is a string representing the output of a
+    The expected output of the mocked ShellCommandsExecutor#execute method is a string representing the output of a
     shell command that lists system services. This output is then used to create an expected ListSystemService object.
 
-    The SystemServicesCollector.collect method is called and the returned services are compared with the expected
+    The SystemServicesCollector#collect method is called and the returned services are compared with the expected
     services using the assert statement.
 
-    If the test passes, it indicates that the SystemServicesCollector.collect method is correctly collecting system
+    If the test passes, it indicates that the SystemServicesCollector#collect method is correctly collecting system
     services.
 
     """

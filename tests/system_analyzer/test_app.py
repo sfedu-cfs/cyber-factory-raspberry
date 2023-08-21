@@ -17,18 +17,18 @@ from src.system_analyzer.apps import AppsCollector
 ])
 def test_app_collector(expected_mock_output, expected_apps):
     """
-    Test the functionality of the AppCollector.collect method.
+    Test the functionality of the AppCollector#collect method.
 
-    This test verifies that the AppCollector.collect method correctly collects apps by mocking the behavior of the
-    ShellCommandsExecutor.execute method.
+    This test verifies that the AppCollector#collect method correctly collects apps by mocking the behavior of the
+    ShellCommandsExecutor#execute method.
 
-    The expected output of the mocked ShellCommandsExecutor.execute method is a string representing the output of a
+    The expected output of the mocked ShellCommandsExecutor#execute method is a string representing the output of a
     shell command that lists apps. This output is then used to create an expected ListApp object.
 
-    The AppCollector.collect method is called and the returned apps are compared with the expected apps using the
+    The AppCollector#collect method is called and the returned apps are compared with the expected apps using the
     assert statement.
 
-    If the test passes, it indicates that the AppCollector.collect method is correctly collecting apps.
+    If the test passes, it indicates that the AppCollector#collect method is correctly collecting apps.
 
     """
     with patch.object(ShellCommandsExecutor, "execute", return_value=expected_mock_output):
