@@ -49,7 +49,6 @@ class NetworkInterfaces:
 
 ni = NetworkInterfaces()
 DEFAULT_GATEWAY_IP = ni.get_primary_network_interface_with_mask()
-
 if __name__ == "__main__":
     print(ni.get_list_network_interfaces().model_dump_json(by_alias=True, indent=4))
     for interface in ni.get_network_interfaces_mask():

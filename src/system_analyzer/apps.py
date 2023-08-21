@@ -1,6 +1,6 @@
 from src.system_analyzer.core.shell_commands_exec import ShellCommandsExecutor
 from src.system_analyzer.core.commands import GET_INFO_ABOUT_APPLICATIONS
-from src.schemas.apps import SingleApp, ListApp
+from src.schemas.apps import BaseSingleApp, ListApp
 
 
 class AppsCollector:
@@ -28,7 +28,7 @@ class AppsCollector:
             app_info = line.split('\t')
             if len(app_info) == 3:
                 name, version, description = app_info
-                app = SingleApp(name=name, version=version, description=description)
+                app = BaseSingleApp(name=name, version=version, description=description)
                 apps.append(app)
 
         return ListApp(items=apps)

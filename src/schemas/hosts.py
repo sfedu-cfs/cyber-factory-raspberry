@@ -9,8 +9,8 @@ class BaseHost(BaseModel):
     Base class for a single host.
     """
 
-    ip: str = Field(None, description="The IP address of the host.", alias="ipAddress")
-    mac: str = Field(None, description="The MAC address of the host.", alias="macAddress")
+    ip: str = Field(None, description="The IP address of the host.", serialization_alias="ipAddress")
+    mac: str = Field(None, description="The MAC address of the host.", serialization_alias="macAddress")
 
 
 class SingleHost(BaseHost, BaseSchema):

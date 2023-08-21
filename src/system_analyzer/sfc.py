@@ -1,6 +1,6 @@
 from pydantic import ValidationError
 
-from src.schemas.sfc import SingleSFC, ListSFC
+from src.schemas.sfc import BaseSingleSFC, ListSFC
 from src.system_analyzer.core.shell_commands_exec import ShellCommandsExecutor
 from src.system_analyzer.core.commands import GET_INSTALLED_APPLICATIONS
 from src.core.log_config import logger
@@ -43,7 +43,7 @@ class SFCCollector:
             sfcs = ListSFC(items=[])
             for line in self.result_command_execute.splitlines():
                 name, version = line.strip().split('\t')
-                app = SingleSFC(name=name, version=version)
+                app = BaseSingleSFC(name=name, version=version)
                 sfcs.items.append(app)
         except (ValidationError, Exception) as e:
             logger.error(f"Error collecting applications: {e}")

@@ -2,7 +2,7 @@ from pydantic import ValidationError
 
 from src.system_analyzer.core.shell_commands_exec import ShellCommandsExecutor
 from src.system_analyzer.core.commands import GET_SYSTEM_SERVICES_INFO
-from src.schemas.system_services import SingleSystemService, ListSystemService
+from src.schemas.system_services import ListSystemService, BaseSingleSystemService
 from src.core.log_config import logger
 
 
@@ -27,7 +27,7 @@ class SystemServicesCollector:
         """
         Initializes the SystemServiceCollector with a ShellCommandsExecutor instance.
         """
-        self.executor = ShellCommandsExecutor(GET_SYSTEM_SERVICES_INFO)
+        self.executor = ShellCommandsExecutor(GET_SYSTEM_SERVICES_INFO).execute()
 
     def collect(self):
         """
@@ -37,13 +37,13 @@ class SystemServicesCollector:
             ListSystemService: A ListSystemService object containing the collected system services.
         """
         try:
-            output = self.executor.execute()
-            lines = output.split('\n')[1:-6]
+            lines = self.executor.split('\n')[1:-6]
+            print(lines)
             services = ListSystemService(items=[])
             for line in lines:
                 if line.strip():
                     service_info = line.split()
-                    service = SingleSystemService(name=service_info[0], status=service_info[3])
+                    service = BaseSingleSystemService(name=service_info[0], status=service_info[3])
                     services.items.append(service)
 
         except (ValidationError, Exception) as e:
