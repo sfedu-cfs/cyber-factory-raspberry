@@ -16,4 +16,5 @@ class Config:
     email = os.environ.get("EMAIL")
     password = os.environ.get("PASSWORD")
 
+
 config = Config()
