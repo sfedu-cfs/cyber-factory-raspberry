@@ -41,7 +41,7 @@ class ArpTableCollector:
             answers_packets, _ = srp(request, timeout=2, retry=1)
             arp_entries = ListARP(
                 items=[
-                    SingleARP(ip=received.psrc, mac=received.hwsrc) for sent, received in answers_packets
+                    SingleARP(ip=received.psrc, mac=str(received.hwsrc).upper()) for sent, received in answers_packets
                 ]
             )
         except (ValidationError, Exception) as e:

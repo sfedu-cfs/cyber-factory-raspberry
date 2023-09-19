@@ -54,4 +54,4 @@ class SFCCollector:
 
 if __name__ == "__main__":
     sfc = SFCCollector().collect()
-    print(sfc.model_dump_json(by_alias=True, indent=4))
+    print(sfc.model_dump(by_alias=True))

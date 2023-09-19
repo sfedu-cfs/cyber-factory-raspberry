@@ -35,7 +35,7 @@ class NetworkInterfaces:
     def get_network_interfaces_mask(self):
         return [
             BaseSingleNetworkInterfaceMask(name=iface.name,
-                                           netmask=iface.ip.split('/')[1] if iface.ip else None)
+                                           netmask=iface.ip.split('/')[1] if iface.ip and iface.ip != "0.0.0.0" else None)
             for iface in self.get_list_network_interfaces().items
         ]
 

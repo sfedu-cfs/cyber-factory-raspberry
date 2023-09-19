@@ -8,6 +8,31 @@ from src.core.log_config import logger
 
 # TODO: Add a class with increase, decrease, and reset methods for each counter
 
+def reset_counter(counter):
+    counter.all_proto_count = 0
+    counter.arp_count = 0
+    counter.tcp_count = 0
+    counter.udp_count = 0
+    counter.icmp_count = 0
+    counter.http_request_count = 0
+    counter.http_response_count = 0
+    counter.modbus_01_request_count = 0
+    counter.modbus_01_response_count = 0
+    counter.modbus_02_request_count = 0
+    counter.modbus_02_response_count = 0
+    counter.modbus_03_request_count = 0
+    counter.modbus_03_response_count = 0
+    counter.modbus_04_request_count = 0
+    counter.modbus_04_response_count = 0
+    counter.modbus_05_request_count = 0
+    counter.modbus_05_response_count = 0
+    counter.modbus_06_request_count = 0
+    counter.modbus_06_response_count = 0
+    counter.modbus_15_request_count = 0
+    counter.modbus_15_response_count = 0
+    counter.modbus_16_request_count = 0
+    counter.modbus_16_response_count = 0
+
 def tcp(packet, counter):
     """
     Increment the TCP count in the counter object.
