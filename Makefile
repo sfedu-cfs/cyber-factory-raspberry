@@ -1,4 +1,4 @@
-.PHONY: test system_analyzers network_analyzer
+.PHONY: test system_analyzers network_analyzer start
 
 .ONESHELL:
 
@@ -24,3 +24,6 @@ network_analyzer:
 	# TODO: make dynamic name of log file and put it in tmp directory
 	export $(shell cat .env | xargs)
 	sudo -E env PATH=$$PATH PYTHONPATH=./ python src/network_analyzer/network_analyzer.py > tmp/network_analyzer_output.log
+
+start:
+	sudo -E env PATH=$$PATH PYTHONPATH=./ python start.py

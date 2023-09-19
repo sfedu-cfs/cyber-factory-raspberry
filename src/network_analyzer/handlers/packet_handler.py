@@ -1,8 +1,10 @@
 import scapy.contrib.modbus as mb
-from datetime import datetime as dt
-from scapy.layers.l2 import Ether
 from scapy.layers.http import HTTPRequest, HTTPResponse
-from src.network_analyzer.wrappers.packet_wrappers import modbus_wrapper, arp, ipv4, ipv6, unknown_ether
+from scapy.layers.l2 import Ether
+
+from src.network_analyzer.wrappers.packet_wrappers import modbus_wrapper, arp, ipv4, ipv6, unknown_ether, reset_counter
+from src.services.cyber_factory_service import CyberFactoryService
+from src.helpers.helpers import get_current_time
 
 ETHER_NUMS = {2054: arp, 2048: ipv4, 34525: ipv6}
 MODBUS_LAYERS = {
@@ -13,6 +15,19 @@ HTTP_LAYERS = {
     HTTPRequest: lambda c: setattr(c, 'http_request_count', c.http_request_count + 1),
     HTTPResponse: lambda c: setattr(c, 'http_response_count', c.http_response_count + 1)
 }
+
+service = CyberFactoryService()
+
+
+def send_to_server(output):
+    current_time = get_current_time()
+    last_update_time = output.last_update
+    diff_seconds = (current_time.hour - last_update_time.hour) * 3600 + (
+                current_time.minute - last_update_time.minute) * 60 + (current_time.second - last_update_time.second)
+    if diff_seconds > output.timing:
+        service.send_count_packets(output.model_dump(by_alias=True))
+        reset_counter(output)
+        output.last_update = get_current_time()
 
 
 def packet_handler(packet, timings, ether_nums=None):
@@ -32,7 +47,7 @@ def packet_handler(packet, timings, ether_nums=None):
     output = ""
 
     for counter in timings:
-        counter.last_update = dt.now().time()
+        # counter.last_update = get_current_time()
         counter.all_proto_count += 1
 
         # Ether handling
@@ -50,6 +65,6 @@ def packet_handler(packet, timings, ether_nums=None):
             if packet.haslayer(layer):
                 action(counter)
 
-        output += counter.model_dump_json(indent=4)
+        output = counter
 
-    return output
+        send_to_server(output)

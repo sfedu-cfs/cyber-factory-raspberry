@@ -10,7 +10,7 @@ class BaseSingleNetworkInterface(BaseModel):
     """
 
     name: str = Field(None, description="The name of the interface.")
-    ip: str = Field(None, description="The IP address of the interface", serialization_alias="ipAddress")
+    ip: str = Field("0.0.0.0", description="The IP address of the interface", serialization_alias="ipAddress")
 
 
 class BaseSingleNetworkInterfaceMask(BaseModel):
