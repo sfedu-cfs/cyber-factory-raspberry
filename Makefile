@@ -1,4 +1,4 @@
-.PHONY: test system_analyzers network_analyzer start
+.PHONY: test system_analyzers network_analyzer start reg_device
 
 .ONESHELL:
 
@@ -27,3 +27,8 @@ network_analyzer:
 
 start:
 	sudo -E env PATH=$$PATH PYTHONPATH=./ python start.py
+
+reg_device:
+	export $(shell cat .env | xargs)
+
+	PATH=$$PATH PYTHONPATH=./ python src/core/reg_device.py

@@ -101,6 +101,20 @@ class CyberFactoryService:
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to send list of network interface records. Error: {e}")
 
+    def register_device(self, name, ip, mac, network_interface, cfs):
+        try:
+            url = self._get_url("devices")
+            response = self.session.post(url, json={"name": name, "ipAddress": ip, "macAddress": mac,
+                                                    "networkInterface": network_interface,
+                                                    "cyberPhysicalSystemId": cfs})
+            response.raise_for_status()
+            logger.info(f"Registered device. Status Code: {response.status_code}.")
+            print(f"Registered device. Status Code: {response.status_code}.")
+            return response
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to register device. Error: {e}")
+            logger.error(f"Failed to register device. Error: {e}")
+
     def login(self):
         creds = {
             "email": str(config.email),
