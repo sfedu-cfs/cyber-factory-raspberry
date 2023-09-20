@@ -13,7 +13,6 @@ from src.system_analyzer.arp_table import ArpTableCollector
 from src.system_analyzer.network_interfaces import NetworkInterfaces
 from src.core.settings import config
 from src.network_analyzer.network_analyzer import start
-from src.core.log_config import logger
 
 
 def collect_system_services():
@@ -88,11 +87,11 @@ for send_func, time_period in config["SendTimePeriods"].items():
     collector_func = globals()[collector_func_name]
 
     # Schedule the send function with the specified time period and pass arguments to the collector function
-    # schedule.every(time_period_hours).hours.do(service.__getattribute__(send_func), collector_func())
     schedule.every(time_period_hours).seconds.do(job, collector_func=collector_func, send_func=send_func)
+
 # Start the thread to collect and send count packets data
-# count_packets_thread = threading.Thread(target=collect_network_analyzer_and_send)
-# count_packets_thread.start()
+count_packets_thread = threading.Thread(target=collect_network_analyzer_and_send)
+count_packets_thread.start()
 
 # Run the scheduler indefinitely
 while True:
