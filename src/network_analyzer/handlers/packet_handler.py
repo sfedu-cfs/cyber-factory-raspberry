@@ -5,6 +5,7 @@ from scapy.layers.l2 import Ether
 from src.network_analyzer.wrappers.packet_wrappers import modbus_wrapper, arp, ipv4, ipv6, unknown_ether, reset_counter
 from src.services.cyber_factory_service import CyberFactoryService
 from src.helpers.helpers import get_current_time
+from src.core.log_config import logger
 
 ETHER_NUMS = {2054: arp, 2048: ipv4, 34525: ipv6}
 MODBUS_LAYERS = {
@@ -23,7 +24,7 @@ def send_to_server(output):
     current_time = get_current_time()
     last_update_time = output.last_update
     diff_seconds = (current_time.hour - last_update_time.hour) * 3600 + (
-                current_time.minute - last_update_time.minute) * 60 + (current_time.second - last_update_time.second)
+            current_time.minute - last_update_time.minute) * 60 + (current_time.second - last_update_time.second)
     if diff_seconds > output.timing:
         service.send_count_packets(output.model_dump(by_alias=True))
         reset_counter(output)
@@ -42,29 +43,32 @@ def packet_handler(packet, timings, ether_nums=None):
     Returns:
         The output string containing the model dump JSON.
     """
-    if ether_nums is None:
-        ether_nums = ETHER_NUMS
-    output = ""
+    try:
+        if ether_nums is None:
+            ether_nums = ETHER_NUMS
+        output = ""
 
-    for counter in timings:
-        # counter.last_update = get_current_time()
-        counter.all_proto_count += 1
+        for counter in timings:
+            # counter.last_update = get_current_time()
+            counter.all_proto_count += 1
 
-        # Ether handling
-        ether = ether_nums.get(packet[Ether].type, unknown_ether)
-        ether(packet, counter)
+            # Ether handling
+            ether = ether_nums.get(packet[Ether].type, unknown_ether)
+            ether(packet, counter)
 
-        # Modbus handling
-        for layer, extractor in MODBUS_LAYERS.items():
-            if layer in packet:
-                modbus_type = extractor(packet)
-                modbus_wrapper(packet, counter, modbus_type)
+            # Modbus handling
+            for layer, extractor in MODBUS_LAYERS.items():
+                if layer in packet:
+                    modbus_type = extractor(packet)
+                    modbus_wrapper(packet, counter, modbus_type)
 
-        # HTTP handling
-        for layer, action in HTTP_LAYERS.items():
-            if packet.haslayer(layer):
-                action(counter)
+            # HTTP handling
+            for layer, action in HTTP_LAYERS.items():
+                if packet.haslayer(layer):
+                    action(counter)
 
-        output = counter
+            output = counter
 
-        send_to_server(output)
+            send_to_server(output)
+    except IndexError:
+        logger.error(f"Error in packet:{packet}")
