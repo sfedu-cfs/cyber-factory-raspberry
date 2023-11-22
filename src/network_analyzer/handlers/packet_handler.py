@@ -25,10 +25,18 @@ def send_to_server(output):
     last_update_time = output.last_update
     diff_seconds = (current_time.hour - last_update_time.hour) * 3600 + (
             current_time.minute - last_update_time.minute) * 60 + (current_time.second - last_update_time.second)
-    if diff_seconds > output.timing:
+
+    if diff_seconds > output.timing or (diff_seconds < 0 and diff_seconds + 86400 > output.timing):
         service.send_count_packets(output.model_dump(by_alias=True))
         reset_counter(output)
         output.last_update = get_current_time()
+    else:
+        if diff_seconds not in range(0, 3601):
+            logger.debug(
+                f"diff_seconds: {diff_seconds}, output.timing: {output.timing}, last_update_time: {last_update_time},"
+                f"current_time: {current_time}")
+        if diff_seconds in range(3601, 4001):
+            logger.debug(f"diff_seconds:{diff_seconds}, output.timing: {output.timing}. We in range 3601 and 4001")
 
 
 def packet_handler(packet, timings, ether_nums=None):
@@ -46,7 +54,6 @@ def packet_handler(packet, timings, ether_nums=None):
     try:
         if ether_nums is None:
             ether_nums = ETHER_NUMS
-        output = ""
 
         for counter in timings:
             # counter.last_update = get_current_time()
@@ -71,4 +78,5 @@ def packet_handler(packet, timings, ether_nums=None):
 
             send_to_server(output)
     except IndexError:
-        logger.error(f"Error in packet:{packet}")
+        logger.error(f"Error in packet:{packet}.")
+

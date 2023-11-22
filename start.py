@@ -1,6 +1,6 @@
 import schedule
 import time
-import threading
+# import threading
 
 from src.services.cyber_factory_service import CyberFactoryService
 from src.system_analyzer.system_services import SystemServicesCollector
@@ -12,7 +12,6 @@ from src.system_analyzer.sfc import SFCCollector
 from src.system_analyzer.arp_table import ArpTableCollector
 from src.system_analyzer.network_interfaces import NetworkInterfaces
 from src.core.settings import config
-from src.network_analyzer.network_analyzer import start
 
 
 def collect_system_services():
@@ -55,21 +54,17 @@ def collect_network_interfaces():
     return network_interfaces.get_list_network_interfaces().model_dump_json(by_alias=True)
 
 
-def collect_network_analyzer_and_send():
-    # Implement the logic to collect count packets data
-    count_packets_data = start()
-
-
-lock = threading.Lock()
+# lock = threading.Lock()
 
 
 def job(collector_func, send_func):
-    lock.acquire()
+    # lock.acquire()
     try:
         collector_data = collector_func()
         service.__getattribute__(send_func)(collector_data)
     finally:
-        lock.release()
+        pass
+        # lock.release()
 
 
 # Create an instance of the CyberFactoryService class
@@ -90,8 +85,8 @@ for send_func, time_period in config["SendTimePeriods"].items():
     schedule.every(time_period_hours).seconds.do(job, collector_func=collector_func, send_func=send_func)
 
 # Start the thread to collect and send count packets data
-count_packets_thread = threading.Thread(target=collect_network_analyzer_and_send)
-count_packets_thread.start()
+# count_packets_thread = threading.Thread(target=collect_network_analyzer_and_send)
+# count_packets_thread.start()
 
 # Run the scheduler indefinitely
 while True:

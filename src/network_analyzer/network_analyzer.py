@@ -1,6 +1,7 @@
 from scapy.all import sniff
 from src.network_analyzer.timings import init_timings
 from src.network_analyzer.handlers.packet_handler import packet_handler
+from src.core.log_config import logger
 
 
 def start(iface=None):
@@ -11,14 +12,17 @@ def start(iface=None):
         iface: The interface to sniff packets on. If None, the default interface will be used.
     """
     packet_counters = init_timings()
-    if iface:
-        # sniff with defined interface
-        sniff(prn=lambda x: packet_handler(x, timings=packet_counters),
-              iface=iface, store=False)
-    else:
-        # sniff with default interface
-        sniff(prn=lambda x: packet_handler(x, timings=packet_counters),
-              store=False)
+    try:
+        if iface:
+            # sniff with defined interface
+            sniff(prn=lambda x: packet_handler(x, timings=packet_counters),
+                  iface=iface, store=False)
+        else:
+            # sniff with default interface
+            sniff(prn=lambda x: packet_handler(x, timings=packet_counters),
+                  store=False)
+    except Exception as e:
+        logger.error(f"Error: {e}")
 
 
 if __name__ == "__main__":

@@ -18,9 +18,10 @@ class PortCollector:
                 if "Starting" not in line and "/" in line:
                     port_number, status, service = line.split()[:4]
                     port_number, protocol = port_number.split('/')
-                    single_port = BasePort(port=int(port_number), status=status, service=service,
-                                           protocol=protocol)
-                    port.items.append(single_port)
+                    if status != "filtered":
+                        single_port = BasePort(port=int(port_number), status=status, service=service,
+                                               protocol=protocol)
+                        port.items.append(single_port)
             ports.append(port)
 
         return ports
