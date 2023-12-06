@@ -7,3 +7,4 @@ GET_INFO_ABOUT_APPLICATIONS = """dpkg-query -W -f='${Package}\t${Version}\t${Des
 # NMAP
 SCAN_HOSTS = "nmap -sn -n"
 SCAN_PORTS = "nmap -p 1-1024 -T4 "
+GET_CONNECTIONS = "netstat -antp"

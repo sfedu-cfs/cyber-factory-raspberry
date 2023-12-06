@@ -28,6 +28,8 @@ psutil = "==5.9.5"
 python-dotenv = "==0.21.1"
 schedule = "*"
 coverage = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 

@@ -6,6 +6,7 @@ from src.network_analyzer.wrappers.packet_wrappers import modbus_wrapper, arp, i
 from src.services.cyber_factory_service import CyberFactoryService
 from src.helpers.helpers import get_current_time
 from src.core.log_config import logger
+from src.database.dao.count_packet_dao import count_packets_dao
 
 ETHER_NUMS = {2054: arp, 2048: ipv4, 34525: ipv6}
 MODBUS_LAYERS = {
@@ -77,6 +78,8 @@ def packet_handler(packet, timings, ether_nums=None):
             output = counter
 
             send_to_server(output)
+            count_packets_dao.create_count_packets(output.model_dump())
+
     except IndexError:
         logger.error(f"Error in packet:{packet}.")
 
