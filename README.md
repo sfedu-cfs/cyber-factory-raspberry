@@ -54,3 +54,8 @@ For run tests:
 pytest 
 ```
 
+Install dependencies:
+
+```bash
+pipenv install --find-links=/path/to/libs
+```

@@ -10,9 +10,6 @@ from src.schemas.monitor_resources import (
 from src.core.log_config import logger
 
 
-# TODO: почитать про @property
-
-
 class SystemResourcesCollector:
     def collect(self):
         """
@@ -28,9 +25,7 @@ class SystemResourcesCollector:
         """
         system_resources = MonitorResource(
             cpu_load=self._cpu_monitor.cpu_load,
-            cpu_usage=self._cpu_monitor.cpu_usage,
-            cpu_avg_load=self._cpu_monitor.cpu_avg_load,
-            cpu_temperature = self._cpu_monitor.cpu_temperature,
+            cpu_temperature=self._cpu_monitor.cpu_temperature,
             ram_usage=self._ram_monitor.ram_usage,
             swap_usage=self._ram_monitor.swap_usage,
             disk_usage=self._general_monitor.disk_usage,
@@ -53,9 +48,7 @@ class SystemResourcesCollector:
         try:
             cpu_monitor = CPUMonitorResource(
                 cpu_load=psutil.cpu_percent(),
-                cpu_usage=psutil.cpu_percent(),
-                cpu_avg_load=[x / psutil.cpu_count() * 100 for x in psutil.getloadavg()][0],
-                # cpu_temperature=psutil.sensors_temperatures()['cpu_thermal'][0].current
+                cpu_temperature=psutil.sensors_temperatures()['cpu_thermal'][0].current
             )
         except Exception as e:
             logger.error(f"Error collecting CPU monitor: {e}")

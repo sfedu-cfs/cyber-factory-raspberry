@@ -34,7 +34,7 @@ from src.helpers.helpers import get_mac
                                                 state="LISTEN", service_name="-")])
      )]
                          )
-def test_collect_hosts(expected_mock_output, expected_connections):
+def test_collect_connections(expected_mock_output, expected_connections):
     """
     Test the functionality of the ConnectionsCollector
 
