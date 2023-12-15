@@ -18,6 +18,7 @@ class Config:
     db_user = os.environ.get("DB_USER")
     db_password = os.environ.get("DB_PASSWORD")
     db_host = os.environ.get("DB_HOST")
+    network_interface = os.environ.get("NET_IFACE")
 
 
 config = Config()

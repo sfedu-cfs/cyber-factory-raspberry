@@ -12,12 +12,6 @@ class CPUMonitorResource(BaseModel):
     cpu_load: float = Field(None,
                             description="The CPU load in percent.",
                             serialization_alias="cpuLoad")
-    cpu_usage: float = Field(None,
-                             description="The CPU usage in percent.",
-                             serialization_alias="cpuUsage")
-    cpu_avg_load: float = Field(None,
-                                description="The average CPU load in percent.",
-                                serialization_alias="cpuAvgLoad")
     cpu_temperature: float = Field(0,
                                    description="The CPU temperature in degrees Celsius.",
                                    serialization_alias="cpuTemperature")

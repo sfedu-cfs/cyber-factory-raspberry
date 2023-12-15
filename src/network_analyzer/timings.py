@@ -2,6 +2,7 @@ from src.schemas.count_packet import CountPacket
 from src.core.log_config import logger
 from src.core.settings import config
 from src.helpers.helpers import get_current_time
+from multiprocessing import Manager
 
 
 def init_timings():
@@ -13,7 +14,7 @@ def init_timings():
     """
     try:
         timings = [x.strip() for x in config["NetworkAnalyzer"]["timings"].split(',')]
-        count_timings = []
+        count_timings = Manager().list()  # Use Manager list for shared memory
         for timing in timings:
             count = CountPacket(timing=int(timing))
             count.last_update = get_current_time()

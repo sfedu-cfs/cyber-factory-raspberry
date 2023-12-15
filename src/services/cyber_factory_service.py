@@ -101,6 +101,17 @@ class CyberFactoryService:
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to send list of network interface records. Error: {e}")
 
+    def send_connections(self, connections):
+        try:
+            url = self._get_url("connections/upload-list")
+            response = self.session.post(url, data=connections, headers={"Content-Type": "application/json"})
+            response.raise_for_status()
+            logger.info(
+                f"Created connections entries. Status Code: {response.status_code}.")
+            return response
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to send list of connections records. Error: {e}")
+
     def register_device(self, device):
         try:
             url = self._get_url("devices")
