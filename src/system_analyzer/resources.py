@@ -49,6 +49,7 @@ class SystemResourcesCollector:
             cpu_monitor = CPUMonitorResource(
                 cpu_load=psutil.cpu_percent(),
                 cpu_temperature=psutil.sensors_temperatures()['cpu_thermal'][0].current
+                # cpu_temperature=0
             )
         except Exception as e:
             logger.error(f"Error collecting CPU monitor: {e}")

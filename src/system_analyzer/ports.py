@@ -12,8 +12,8 @@ class PortCollector:
         # TODO: remake it for new api
         ports = []
         for host in self.hosts.items:
-            port = ListPort(ip=host.ip, items=[])
-            ports_result_command_execute = ShellCommandsExecutor(f"{SCAN_PORTS} {host.ip}").execute()
+            port = ListPort(ip_address=host.ip_address, items=[])
+            ports_result_command_execute = ShellCommandsExecutor(f"{SCAN_PORTS} {host.ip_address}").execute()
             for line in ports_result_command_execute.strip().splitlines():
                 if "Starting" not in line and "/" in line:
                     port_number, status, service = line.split()[:4]

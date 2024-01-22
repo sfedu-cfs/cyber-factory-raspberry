@@ -26,10 +26,13 @@ urllib3 = "==2.0.4"
 zipp = "==3.15.0"
 psutil = "==5.9.5"
 python-dotenv = "==0.21.1"
-schedule = "*"
-coverage = "*"
-sqlalchemy = "*"
-psycopg2-binary = "*"
+schedule = "==1.2.1"
+coverage = "==7.2.7"
+sqlalchemy = "==2.0.23"
+psycopg2-binary = "==2.9.9"
+sqlalchemy-utils = "==0.41.1"
+alembic = "==1.12.0"
+black = "==23.3.0"
 
 [dev-packages]
 

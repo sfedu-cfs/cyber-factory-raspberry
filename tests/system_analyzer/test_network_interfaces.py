@@ -55,7 +55,7 @@ def test_get_list_network_interfaces(network_interfaces_ips, network_interfaces_
     ni.network_interfaces_ips = network_interfaces_ips
     ni.network_interfaces_names = network_interfaces_names
 
-    result = ni.get_list_network_interfaces()
+    result = ni.collect()
 
     assert result == ListNetworkInterface(**expected_result)
     ni.parse_network_interfaces_data.assert_called_once_with(network_interfaces_ips)
@@ -92,7 +92,7 @@ def test_get_network_interfaces_mask(list_network_interfaces, expected_result):
 
     """
     ni = NetworkInterfaces()
-    ni.get_list_network_interfaces = mock.Mock(return_value=ListNetworkInterface(items=list_network_interfaces))
+    ni.collect = mock.Mock(return_value=ListNetworkInterface(items=list_network_interfaces))
 
     result = ni.get_network_interfaces_mask()
 

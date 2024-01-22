@@ -12,7 +12,7 @@ class NetworkInterfaces:
         self.network_interfaces_ips = ShellCommandsExecutor(GET_NETWORK_INTERFACES_IPS).execute().split('\n')
         self.network_interfaces_names = ShellCommandsExecutor(GET_NETWORK_INTERFACES_NAMES).execute().split('\n')
 
-    def get_list_network_interfaces(self):
+    def collect(self):
         parsed_network_interfaces_ips = self.parse_network_interfaces_data(self.network_interfaces_ips)
         missing_interfaces = ListNetworkInterface(items=[])
         for name in self.network_interfaces_names:
@@ -35,14 +35,14 @@ class NetworkInterfaces:
     def get_network_interfaces_mask(self):
         return [
             BaseSingleNetworkInterfaceMask(name=iface.name,
-                                           netmask=iface.ip.split('/')[1] if iface.ip and iface.ip != "0.0.0.0" else None)
-            for iface in self.get_list_network_interfaces().items
+                                           netmask=iface.ip_address.split('/')[1] if iface.ip_address and iface.ip_address != "0.0.0.0" else None)
+            for iface in self.collect().items
         ]
 
     @staticmethod
     def parse_network_interfaces_data(list_network_interfaces):
         return ListNetworkInterface(items=[
-            BaseSingleNetworkInterface(name=item.partition(" ")[0], ip=item.partition(" ")[2])
+            BaseSingleNetworkInterface(name=item.partition(" ")[0], ip_address=item.partition(" ")[2])
             for item in list_network_interfaces
         ])
 
@@ -50,7 +50,7 @@ class NetworkInterfaces:
 ni = NetworkInterfaces()
 DEFAULT_GATEWAY_IP = ni.get_primary_network_interface_with_mask()
 if __name__ == "__main__":
-    print(ni.get_list_network_interfaces().model_dump_json(by_alias=True, indent=4))
+    print(ni.collect().model_dump_json(by_alias=True, indent=4))
     for interface in ni.get_network_interfaces_mask():
         print(interface.model_dump_json(by_alias=True, indent=4))
     print(ni.get_primary_network_interface_with_mask())

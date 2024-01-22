@@ -60,16 +60,6 @@ class CyberFactoryService:
         except requests.exceptions.RequestException as e:
             logger.error(f"Failed to send applications. Error: {e}")
 
-    def send_count_packets(self, count_packets):
-        try:
-            url = self._get_url("count-packets")
-            response = self.session.post(url, json=count_packets)
-            response.raise_for_status()
-            logger.info(f"Created packets. Status Code: {response.status_code}.")
-            return response
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Failed to send packets. Error: {e}.")
-
     def send_sfc(self, sfc):
         try:
             url = self._get_url("sfc/upload-list")

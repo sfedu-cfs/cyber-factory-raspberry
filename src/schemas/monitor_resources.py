@@ -40,7 +40,7 @@ class GeneralMonitorResource(BaseModel):
                         description="The uptime of the system.")
 
 
-class MonitorResource(CPUMonitorResource, RAMMonitorResource, GeneralMonitorResource, BaseSchema):
+class MonitorResource(CPUMonitorResource, RAMMonitorResource, GeneralMonitorResource):
     """
     Class representing a single monitor resource.
 

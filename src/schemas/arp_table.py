@@ -9,12 +9,12 @@ class BaseSingleARP(BaseModel):
     Base class for a single ARP table entry.
 
     Attributes:
-        ip (str): The IP address of the ARP table entry.
-        mac (str): The MAC address of the ARP table entry.
+        ip_address (str): The IP address of the ARP table entry.
+        mac_address (str): The MAC address of the ARP table entry.
     """
 
-    ip: str = Field(None, description="The IP address of the ARP-table entry", serialization_alias="ipAddress")
-    mac: str = Field(None, description="The MAC address of the ARP-table entry", serialization_alias="macAddress")
+    ip_address: str = Field(None, description="The IP address of the ARP-table entry", serialization_alias="ipAddress")
+    mac_address: str = Field(None, description="The MAC address of the ARP-table entry", serialization_alias="macAddress")
 
 
 class SingleARP(BaseSingleARP, BaseSchema):

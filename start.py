@@ -1,8 +1,8 @@
 import schedule
 import time
-# import threading
 
-from src.services.cyber_factory_service import CyberFactoryService
+from sqlalchemy.exc import IntegrityError
+
 from src.system_analyzer.system_services import SystemServicesCollector
 from src.system_analyzer.hosts import HostCollector
 from src.system_analyzer.ports import PortCollector
@@ -11,84 +11,101 @@ from src.system_analyzer.apps import AppsCollector
 from src.system_analyzer.sfc import SFCCollector
 from src.system_analyzer.arp_table import ArpTableCollector
 from src.system_analyzer.network_interfaces import NetworkInterfaces
+from src.system_analyzer.connections import ConnectionsCollector
 from src.core.settings import config
+from src.database.dao.apps_dao import AppDAO, AppCurrentDAO
+from src.database.dao.hosts_dao import HostsDAO, HostsCurrentDAO
+from src.database.dao.ports_dao import PortsDAO, PortsCurrentDAO
+from src.database.dao.monitor_resources_dao import MonitorResourcesDAO
+from src.database.dao.system_services_dao import SystemServicesDAO, SystemServicesCurrentDAO
+from src.database.dao.sfc_dao import SFCDao, SFCCurrentDao
+from src.database.dao.arp_table_dao import ArpTableDAO, ArpTableCurrentDAO
+from src.database.dao.interfaces_dao import NetworkInterfacesDAO, NetworkInterfacesCurrentDAO
+from src.database.dao.connections_dao import ConnectionsDAO, ConnectionsCurrentDAO
+from src.database.connection import Session
 
 
-def collect_system_services():
-    services = SystemServicesCollector()
-    return services.collect().model_dump(by_alias=True)
+class Collector:
+    def __init__(self, collector_class, dao_class, dao_current_class=None):
+        self.collector_class = collector_class
+        self.dao_class = dao_class
+        self.dao_current_class = dao_current_class
+
+    def collect(self):
+        session = Session()
+        try:
+            if self.dao_current_class is None:
+                collector = self.collector_class()
+                dao = self.dao_class(db=session)
+                data = collector.collect()
+                dao.create(data.model_dump())
+                session.commit()
+            else:
+                collector = self.collector_class()
+                dao = self.dao_class(db=session)
+                current_dao = self.dao_current_class(db=session)
+                # Удаляем все записи из текущей таблицы
+                current_dao.delete_all()
+                data = collector.collect()
+                # Проверяем, что данные не пустые
+                if type(data) != list and data.items:
+                    for item in data.items:
+                        if not current_dao.exists(item):
+                            current_dao.create(item.model_dump())
+                        if dao.exists(item):
+                            continue
+                        dao.create(item.model_dump())
+                    session.commit()
+                elif type(data) == list:
+                    for host in data:
+                        ip = host.ip_address
+                        for item in host.items:
+                            current_dao.create(item.model_dump(), ip)
+                            if dao.exists(item, ip):
+                                continue
+                            dao.create(item.model_dump(), ip)
+                        session.commit()
+
+        except IntegrityError as e:
+            session.rollback()
+        finally:
+            session.close()
 
 
-def collect_hosts():
-    hosts = HostCollector()
-    return hosts.collect().model_dump(by_alias=True)
+collectors = [
+    Collector(SystemServicesCollector, SystemServicesDAO, SystemServicesCurrentDAO),
+    Collector(HostCollector, HostsDAO, HostsCurrentDAO),
+    Collector(PortCollector, PortsDAO, PortsCurrentDAO),
+    Collector(SystemResourcesCollector, MonitorResourcesDAO),
+    Collector(AppsCollector, AppDAO, AppCurrentDAO),
+    Collector(SFCCollector, SFCDao, SFCCurrentDao),
+    Collector(ArpTableCollector, ArpTableDAO, ArpTableCurrentDAO),
+    Collector(NetworkInterfaces, NetworkInterfacesDAO, NetworkInterfacesCurrentDAO),
+    Collector(ConnectionsCollector, ConnectionsDAO, ConnectionsCurrentDAO)
+]
 
 
-def collect_ports():
-    ports = PortCollector()
-    return ports.collect()
+def job(collector):
+    collector.collect()
 
 
-def collect_resources():
-    monitoring = SystemResourcesCollector()
-    return monitoring.collect().model_dump(by_alias=True)
+def schedule_coroutine(job, collector):
+    def wrapper():
+        job(collector)
+
+    return wrapper
 
 
-def collect_applications():
-    applications = AppsCollector()
-    return applications.collect().model_dump(by_alias=True)
+def main():
+    for collector, time_period in zip(collectors, config["SendTimePeriods"].values()):
+        print(collector.collector_class.__name__, time_period)
+        time_period_hours = int(time_period)
+        schedule.every(time_period_hours).seconds.do(schedule_coroutine(job, collector))
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 
-def collect_sfc():
-    sfc = SFCCollector()
-    return sfc.collect().model_dump(by_alias=True)
-
-
-def collect_arp_table():
-    arp_table = ArpTableCollector()
-    return arp_table.collect().model_dump(by_alias=True)
-
-
-def collect_network_interfaces():
-    network_interfaces = NetworkInterfaces()
-    return network_interfaces.get_list_network_interfaces().model_dump_json(by_alias=True)
-
-
-# lock = threading.Lock()
-
-
-def job(collector_func, send_func):
-    # lock.acquire()
-    try:
-        collector_data = collector_func()
-        service.__getattribute__(send_func)(collector_data)
-    finally:
-        pass
-        # lock.release()
-
-
-# Create an instance of the CyberFactoryService class
-service = CyberFactoryService()
-
-# Schedule the send functions with custom time periods
-for send_func, time_period in config["SendTimePeriods"].items():
-    # Extract the collector function name
-    collector_func_name = send_func.replace("send_", "collect_")
-
-    # Convert the time period to hours
-    time_period_hours = int(time_period)
-
-    # Get the collector function
-    collector_func = globals()[collector_func_name]
-
-    # Schedule the send function with the specified time period and pass arguments to the collector function
-    schedule.every(time_period_hours).seconds.do(job, collector_func=collector_func, send_func=send_func)
-
-# Start the thread to collect and send count packets data
-# count_packets_thread = threading.Thread(target=collect_network_analyzer_and_send)
-# count_packets_thread.start()
-
-# Run the scheduler indefinitely
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+if __name__ == "__main__":
+    main()

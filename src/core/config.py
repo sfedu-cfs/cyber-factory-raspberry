@@ -15,10 +15,13 @@ class Config:
     base_url = os.environ.get("BASE_URL")
     email = os.environ.get("EMAIL")
     password = os.environ.get("PASSWORD")
-    db_user = os.environ.get("DB_USER")
-    db_password = os.environ.get("DB_PASSWORD")
-    db_host = os.environ.get("DB_HOST")
+    db_user = os.environ.get("PGUSER")
+    db_password = os.environ.get("PGPASSWORD")
+    db_host = os.environ.get("PGHOST")
     network_interface = os.environ.get("NET_IFACE")
+    mac_address = os.environ.get("MAC_ADDRESS")
+    ip_address = os.environ.get("IP_ADDRESS")
+    default_gateway = os.environ.get("DEFAULT_GATEWAY")
 
 
 config = Config()

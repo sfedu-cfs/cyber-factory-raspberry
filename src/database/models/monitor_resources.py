@@ -8,6 +8,7 @@ class MonitorResources(Base):
     Модель данных мониторинга ресурсов
 
     :param id: Уникальный идентификатор записи
+    :param created_date: Дата создания записи
     :param ram_usage: Использование RAM в процентах
     :param swap_usage: Использование SWAP в процентах
     :param disk_usage: Использование диска в процентах
@@ -18,6 +19,7 @@ class MonitorResources(Base):
     __tablename__ = "monitor_resources"
 
     id = Column(Integer, primary_key=True, index=True)
+    created_date = Column(DateTime)
     ram_usage = Column(Float)
     swap_usage = Column(Float)
     disk_usage = Column(Float)

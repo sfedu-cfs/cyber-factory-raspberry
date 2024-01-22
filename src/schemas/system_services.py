@@ -1,3 +1,5 @@
+from datetime import date
+
 from pydantic import BaseModel, Field
 from typing import List
 
@@ -15,6 +17,7 @@ class BaseSingleSystemService(BaseModel):
 
     name: str = Field(None, description="The name of the system service.")
     status: str = Field(None, description="The status of the system service.")
+    created_date: date = Field(None, description="The date the system service was created.")
 
 
 class SingleSystemService(BaseSingleSystemService, BaseSchema):

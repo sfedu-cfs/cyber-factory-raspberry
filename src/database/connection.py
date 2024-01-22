@@ -1,15 +1,13 @@
+import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base
+from src.core.log_config import logger
 
-from src.core.config import config
+root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+database_url = os.getenv("DATABASE_URL", f"sqlite:///{os.path.join(root_path, 'cyber_factory.db')}")
 
-# Создание подключения к базе данных
-engine = create_engine(f"postgresql://{config.db_user}:{config.db_password}@{config.db_host}:5432/cyber-factory")
+engine = create_engine(database_url)
+logger.info(f"Database created at: {database_url}")
 
-# Создание сессии для работы с базой данных
 Session = sessionmaker(bind=engine)
-session = Session()
-
-# Определение базовой модели данных с использованием SQLAlchemy
 Base = declarative_base()

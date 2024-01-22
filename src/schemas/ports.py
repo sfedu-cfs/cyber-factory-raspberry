@@ -3,7 +3,7 @@ from typing import List
 
 
 class BaseSchema(BaseModel):
-    ip: str = Field(None, description="The IP address of host", serialization_alias="hostIpAddress")
+    ip_address: str = Field(None, description="The IP address of host", serialization_alias="hostIpAddress")
 
 
 class BasePort(BaseModel):

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from src.helpers.helpers import get_mac
+from src.core.config import config
 
 
 class BaseSchema(BaseModel):
@@ -11,4 +11,5 @@ class BaseSchema(BaseModel):
         device_id (str): The Mac-Address of the device.
     """
 
-    device_id: str = Field(default_factory=get_mac, alias="deviceMacAddress")
+    # device_id: str = Field(default=config.mac_address, alias="deviceMacAddress")
+    pass

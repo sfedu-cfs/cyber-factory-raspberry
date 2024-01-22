@@ -4,7 +4,7 @@ from src.schemas.arp_table import SingleARP, ListARP
 from src.core.log_config import logger
 
 
-class SystemArpTableCollector:
+class ArpTableCollector:
     """
     Represents a collector for the ARP table from the system files.
 
@@ -16,7 +16,7 @@ class SystemArpTableCollector:
         arp_file_path (str): The path to the system file containing the ARP table.
 
     Example usage:
-        arp_table = SystemArpTableCollector().collect()
+        arp_table = ArpTableCollector().collect()
         logger.info(arp_table.model_dump_json(by_alias=True, indent=4))
     """
 
@@ -45,7 +45,7 @@ class SystemArpTableCollector:
         for line in arp_table:
             try:
                 fields = line.split()
-                arp_entries.items.append(SingleARP(ip=fields[0], mac=fields[3].upper()))
+                arp_entries.items.append(SingleARP(ip_address=fields[0], mac_address=fields[3].upper()))
             except (ValueError, ValidationError) as e:
                 logger.error(f"Error parsing ARP table line '{line}': {e}")
 
@@ -53,5 +53,5 @@ class SystemArpTableCollector:
 
 
 if __name__ == '__main__':
-    at = SystemArpTableCollector().collect()
+    at = ArpTableCollector().collect()
     logger.info(at.model_dump_json(by_alias=True, indent=4))

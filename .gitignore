@@ -139,3 +139,4 @@ dmypy.json
 .ini
 .pytest.cache/
 tmp/*
+*.db

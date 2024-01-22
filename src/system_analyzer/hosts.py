@@ -2,7 +2,7 @@ from src.system_analyzer.core.commands import SCAN_HOSTS
 from src.system_analyzer.core.shell_commands_exec import ShellCommandsExecutor
 from src.system_analyzer.network_interfaces import DEFAULT_GATEWAY_IP
 from src.schemas.hosts import BaseHost, ListHost
-from src.helpers.helpers import get_mac
+from src.core.config import config
 
 
 class HostCollector:
@@ -10,7 +10,7 @@ class HostCollector:
         """
         Initializes the HostsCollector object.
         """
-        self.hosts_result_command_execute = ShellCommandsExecutor(f"{SCAN_HOSTS} {DEFAULT_GATEWAY_IP}").execute()
+        self.hosts_result_command_execute = ShellCommandsExecutor(f"{SCAN_HOSTS} {config.default_gateway}").execute()
 
     def collect(self):
         """
@@ -23,14 +23,14 @@ class HostCollector:
         lines = self.hosts_result_command_execute.strip().splitlines()
         for i in range(len(lines)):
             if "Nmap scan report" in lines[i]:
-                ip = lines[i].split()[-1]
-                mac_address = get_mac()
+                ip_address = lines[i].split()[-1]
+                mac_address = config.mac_address
                 try:
                     if "MAC Address" in lines[i + 2]:
                         mac_address = lines[i + 2].split()[2]
                 except IndexError:
                     pass
-                single_host = BaseHost(ip=ip, mac=mac_address)
+                single_host = BaseHost(ip_address=ip_address, mac_address=mac_address)
                 hosts.items.append(single_host)
 
         return hosts
